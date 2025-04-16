@@ -13,6 +13,7 @@ import StudentDashboard from '../pages/student/Dashboard';
 import StudentReport from '../pages/student/StudentReport';
 import StudentSop from '../pages/student/SopSection';
 import StudentFileView from '../pages/student/ViewFiles';
+import DocumentViewer from '../pages/student/DocumentViewer';
 
 const AppRoutes = () => {
   return (
@@ -30,7 +31,7 @@ const AppRoutes = () => {
       <Route path="/student/report" element={<StudentReport />} />
       <Route path="/student/sop" element={<StudentSop />} />
       <Route path="/student/viewfiles" element={<StudentFileView />} />
-      
+      <Route path="/student/documentview/:id" element={<DocumentViewer/>} />
     </Routes>
   );
 };

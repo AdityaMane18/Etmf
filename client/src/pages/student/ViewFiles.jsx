@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaSearch, FaFileAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const initialFiles = [
     { id: 1, name: "abc.pdf", addedBy: "Admin", date: "2025-04-16", status: "Pending" },
@@ -13,6 +14,8 @@ const StudentFileView = () => {
     const [searchText, setSearchText] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
 
+    const navigate = useNavigate();
+
     const handleStatusChange = (id, newStatus) => {
         const updatedFiles = files.map(file =>
             file.id === id ? { ...file, status: newStatus } : file
@@ -20,7 +23,6 @@ const StudentFileView = () => {
         setFiles(updatedFiles);
     };
 
-    // Filter logic: search + status filter
     const filteredFiles = files.filter(file => {
         const matchesSearch = file.name.toLowerCase().includes(searchText.toLowerCase());
         const matchesStatus = statusFilter === 'All' || file.status === statusFilter;
@@ -32,8 +34,6 @@ const StudentFileView = () => {
             <h1 className="text-2xl font-bold mb-4">Your Assigned Files</h1>
 
             <div className="mb-4 flex justify-between items-center">
-
-                {/* 🔍 Search Bar (centered looking, but actually flexible) */}
                 <div className="max-w-md w-full">
                     <div className="flex items-center border rounded px-3 py-2 bg-white">
                         <FaSearch className="text-gray-400 mr-2" />
@@ -47,7 +47,6 @@ const StudentFileView = () => {
                     </div>
                 </div>
 
-                {/* Status Filter Dropdown fixed to right side */}
                 <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -60,37 +59,43 @@ const StudentFileView = () => {
                 </select>
             </div>
 
-
-            {/* File List */}
             <div className="space-y-4">
                 {filteredFiles.length > 0 ? (
                     filteredFiles.map(file => (
-                        <div
-                            key={file.id}
-                            className="flex justify-between items-center p-4 border rounded shadow-sm 
-                   hover:bg-gray-200 hover:shadow-md transition duration-200 cursor-pointer"
-                        >
-                            {/* File Info: Icon + Name + Details */}
-                            <div className="flex items-center gap-4">
+                        <div key={file.id} className="relative flex justify-between items-center border rounded shadow-sm transition duration-200">
+
+                            {/* Left side: Hoverable section (file name, info) */}
+                            <div
+                                onClick={() => navigate(`/student/documentview/${file.id}`)}
+                                className="flex items-center gap-4 p-4 hover:bg-blue-100 hover:shadow-md rounded transition duration-200 cursor-pointer w-full"
+                            >
                                 <div className="text-blue-600 text-3xl">
                                     <FaFileAlt />
                                 </div>
                                 <div>
-                                    <p className="font-semibold">{file.name}</p>
-                                    <p className="text-sm text-gray-500">Added by {file.addedBy} on {file.date}</p>
+                                    <p className="font-semibold text-blue-800 hover:text-blue-500">
+                                        {file.name}
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        Added by {file.addedBy} on {file.date}
+                                    </p>
                                 </div>
                             </div>
 
-                            {/* Status Dropdown for Each File */}
-                            <select
-                                value={file.status}
-                                onChange={(e) => handleStatusChange(file.id, e.target.value)}
-                                className="border rounded px-3 py-1"
-                            >
-                                <option value="Pending">Pending</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Completed">Completed</option>
-                            </select>
+                            {/* Right side: Dropdown (no background hover, overlay) */}
+                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 pr-4">
+                                <select
+                                    value={file.status}
+                                    onChange={(e) => handleStatusChange(file.id, e.target.value)}
+                                    className="border rounded px-3 py-1 bg-white"
+                                    onClick={(e) => e.stopPropagation()} // prevents triggering parent hover
+                                >
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+
                         </div>
                     ))
                 ) : (
@@ -98,9 +103,9 @@ const StudentFileView = () => {
                 )}
             </div>
 
+
         </div>
     );
-}
-
+};
 
 export default StudentFileView;
