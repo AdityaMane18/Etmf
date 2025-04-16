@@ -33,29 +33,29 @@ const StudentList = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white shadow rounded-xl overflow-x-auto">
-          <table className="w-full text-sm text-center">
+        <div className="bg-white shadow rounded-xl overflow-x-auto w-full max-w-7xl mx-auto">
+          <table className="w-full text-sm text-center border border-gray-300">
             <thead className="bg-gray-50 text-gray-700">
-              <tr>
-                <th className="py-3 px-4">Roll No.</th>
-                <th className="py-3 px-4">Student Name</th>
-                <th className="py-3 px-4">Class</th>
-                <th className="py-3 px-4">Total Percentage</th>
-                <th className="py-3 px-4">Result</th>
-                <th className="py-3 px-4">Report</th>
+              <tr className="h-18">
+                <th className="px-4 border border-gray-300">Roll No.</th>
+                <th className="px-4 border border-gray-300">Student Name</th>
+                <th className="px-4 border border-gray-300">Class</th>
+                <th className="px-4 border border-gray-300">Total Percentage</th>
+                <th className="px-4 border border-gray-300">Result</th>
+                <th className="px-4 border border-gray-300">Report</th>
               </tr>
             </thead>
             <tbody>
               {students.map((s) => (
-                <tr key={s.roll} className="border-t hover:bg-gray-50">
-                  <td className="py-3">{s.roll}</td>
-                  <td className="py-3 font-medium text-gray-800">{s.name}</td>
-                  <td className="py-3">{s.class}</td>
-                  <td className="py-3">{s.percentage} %</td>
-                  <td className={`py-3 font-semibold ${s.result === "Pass" ? "text-green-600" : "text-red-500"}`}>
+                <tr key={s.roll} className="h-24 hover:bg-gray-50">
+                  <td className="px-4 border border-gray-300">{s.roll}</td>
+                  <td className="px-4 border border-gray-300 font-medium text-gray-800">{s.name}</td>
+                  <td className="px-4 border border-gray-300">{s.class}</td>
+                  <td className="px-4 border border-gray-300">{s.percentage} %</td>
+                  <td className={`px-4 border border-gray-300 font-semibold ${s.result === "Pass" ? "text-green-600" : "text-red-500"}`}>
                     {s.result}
                   </td>
-                  <td className="py-3">
+                  <td className="px-4 border border-gray-300">
                     <button className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">View</button>
                   </td>
                 </tr>
@@ -63,6 +63,8 @@ const StudentList = () => {
             </tbody>
           </table>
         </div>
+
+
       </main>
     </div>
   );

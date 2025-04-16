@@ -60,11 +60,11 @@ const SOPSection = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl font-bold text-gray-800">SOP Section</h1>
           <button
-  onClick={() => navigate("/admin/upload-document")}
-  className="bg-gray-100 hover:bg-gray-200 text-sm px-4 py-2 rounded flex items-center gap-2 shadow"
->
-  <FaUpload /> Upload Document
-</button>
+            onClick={() => navigate("/admin/upload-document")}
+            className="bg-white-300 hover:bg-gray-300 text-bold px-10 py-2 rounded flex items-center gap-2 shadow"
+          >
+            <FaUpload /> Upload Document
+          </button>
 
         </div>
 
@@ -82,13 +82,13 @@ const SOPSection = () => {
 
         {/* 📋 Table */}
         <div className="bg-white shadow rounded-xl overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm e">
             <thead>
               <tr className="bg-gray-50 text-gray-700">
-                <th className="text-left py-3 px-4">Document</th>
-                <th className="text-left py-3 px-4">Document Type</th>
-                <th className="text-left py-3 px-4">Date and Time</th>
-                <th className="text-left py-3 px-4">No Of Views</th>
+                <th className="text-left py-3 px-4 border-r">Document</th>
+                <th className="text-left py-3 px-4 border-r">Document Type</th>
+                <th className="text-left py-3 px-4 border-r">Date and Time</th>
+                <th className="text-left py-3 px-4 ">No Of Views</th>
               </tr>
             </thead>
             <tbody>
@@ -97,18 +97,21 @@ const SOPSection = () => {
                   key={i}
                   className="border-t hover:bg-gray-50 transition"
                 >
-                  <td className="py-4 px-4 flex gap-3 items-center">
-                    <div className={`text-2xl ${doc.iconColor}`}>
-                      <HiOutlineDocumentText />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800">{doc.title}</p>
-                      <p className="text-gray-500 text-xs">Created By: {doc.by}</p>
+                  <td className="py-4 px-4 border-r">
+                    <div className="flex gap-3 items-center">
+                      <div className={`text-2xl ${doc.iconColor}`}>
+                        <HiOutlineDocumentText />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">{doc.title}</p>
+                        <p className="text-gray-500 text-xs">Created By: {doc.by}</p>
+                      </div>
                     </div>
                   </td>
-                  <td className="py-4 px-4 text-gray-700">{doc.type}</td>
-                  <td className="py-4 px-4 text-gray-700">Created On: {doc.created}</td>
-                  <td className="py-4 px-4 text-gray-700 flex items-center gap-2">
+
+                  <td className="py-4 px-4 text-gray-700 border-r">{doc.type}</td>
+                  <td className="py-4 px-4 text-gray-700 border-r">Created On: {doc.created}</td>
+                  <td className="py-6 px-6 text-gray-700 flex items-center gap-4">
                     <FaEye className="text-blue-400" /> {doc.views}
                   </td>
                 </tr>
@@ -116,6 +119,7 @@ const SOPSection = () => {
             </tbody>
           </table>
         </div>
+
       </main>
     </div>
   );

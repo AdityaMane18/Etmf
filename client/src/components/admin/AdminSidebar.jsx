@@ -11,7 +11,8 @@ const AdminSidebar = () => {
           alt="User"
           className="w-24 h-24 rounded-full border"
         />
-        <h2 className="text-lg font-semibold mt-4">User Name</h2>
+        <h2 className="text-lg font-semibold mt-4 border-black pb-2">User Name</h2>
+        <hr className="border-black mt-2" />
       </div>
 
       <nav className="space-y-4">
