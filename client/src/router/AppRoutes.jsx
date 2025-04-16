@@ -8,8 +8,11 @@ import AddDocument from "../pages/admin/AddDocument";
 import StudentList from "../pages/admin/StudentList";
 import Report from "../pages/admin/Report";
 
-import StudentLogin from '../pages/student/Login';
+import StudentLogin from '../pages/student/StudentLogin';
 import StudentDashboard from '../pages/student/Dashboard';
+import StudentReport from '../pages/student/StudentReport';
+import StudentSop from '../pages/student/SopSection';
+import StudentFileView from '../pages/student/ViewFiles';
 
 const AppRoutes = () => {
   return (
@@ -24,6 +27,10 @@ const AppRoutes = () => {
       {/* Student Routes */}
       <Route path="/student/login" element={<StudentLogin />} />
       <Route path="/student/dashboard" element={<StudentDashboard />} />
+      <Route path="/student/report" element={<StudentReport />} />
+      <Route path="/student/sop" element={<StudentSop />} />
+      <Route path="/student/viewfiles" element={<StudentFileView />} />
+      
     </Routes>
   );
 };

@@ -1,12 +1,29 @@
+
+import StatCards from "../../components/admin/StatCards";
+import DocumentList from "../../components/admin/DocumentList";
+import StudentSidebar from "../../components/student/StudentSidebar";
+
 const StudentDashboard = () => {
-    return (
-      <div className="p-10 min-h-screen bg-green-50">
-        <h1 className="text-3xl font-bold text-green-800">Welcome to Student Dashboard 🎓</h1>
-        <p className="mt-4 text-gray-700">
-          You can view assigned tasks, access study documents, and track your progress here.
-        </p>
+  return (
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+     <div className="w-64 bg-white shadow">
+        < StudentSidebar />
       </div>
-    );
+
+      {/* Main Content */}
+
+      <div className="flex-1 p-6 space-y-8">
+        {/* Stat Cards */}
+        
+
+        <StatCards />
+
+        {/* Document List */}
+        <DocumentList />
+      </div>
+    </div>
+  );
   };
   
   export default StudentDashboard;
