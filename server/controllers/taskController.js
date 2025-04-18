@@ -1,5 +1,5 @@
 import Task from "../models/Task.js";
-
+import User from "../models/User.js";
 // ✅ Assign a new task
 export const createTask = async (req, res) => {
   try {
@@ -15,6 +15,39 @@ export const createTask = async (req, res) => {
     res.status(201).json({ message: "Task created successfully", task: newTask });
   } catch (error) {
     res.status(500).json({ message: "Failed to create task", error: error.message });
+  }
+};
+// ✅ Assign task to all students
+export const assignTaskToAllStudents = async (req, res) => {
+  try {
+    const { document_id, status = "in process" } = req.body;
+
+    // Get all student users
+    const students = await User.find({ role: "student" });
+
+    if (!students.length) {
+      return res.status(404).json({ message: "No students found" });
+    }
+
+    const createdTasks = [];
+
+    for (const student of students) {
+      const task = new Task({
+        student_id: student._id,
+        document_id,
+        status,
+      });
+
+      await task.save();
+      createdTasks.push(task);
+    }
+
+    res.status(201).json({
+      message: `${createdTasks.length} tasks assigned successfully`,
+      tasks: createdTasks,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to assign tasks", error: error.message });
   }
 };
 

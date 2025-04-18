@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const reportSchema = new mongoose.Schema(
+const commentSchema = new mongoose.Schema(
   {
     student_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -12,18 +12,13 @@ const reportSchema = new mongoose.Schema(
       ref: "Document",
       required: true,
     },
-    total_percentage: {
-      type: Number,
-      required: true,
-    },
-    result: {
+    comment: {
       type: String,
-      enum: ["Pass", "Fail"],
       required: true,
     },
   },
   { timestamps: true }
 );
 
-const Report = mongoose.model("Report", reportSchema);
-export default Report;
+const Comment =  mongoose.model("Comment", commentSchema);
+export default Comment;

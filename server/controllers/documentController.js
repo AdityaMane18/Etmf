@@ -3,7 +3,8 @@ import Document from "../models/Document.js";
 // ✅ Add a new document
 export const addDocument = async (req, res) => {
     try {
-      const { name, description, created_by } = req.body;
+      const { name, description } = req.body;
+      const created_by = req.user.userId;
       const fileUrl = req.file?.path; // Cloudinary gives file path in req.file
   
       const newDoc = new Document({
@@ -17,7 +18,11 @@ export const addDocument = async (req, res) => {
   
       res.status(201).json({ message: "Document added", document: newDoc });
     } catch (error) {
-      res.status(500).json({ message: "Upload failed", error: error.message });
+      res.status(500).json({ 
+        message: "Upload failed", 
+        error: error?.message || "Unknown error" 
+      });
+      
     }
   };
   

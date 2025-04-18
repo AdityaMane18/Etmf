@@ -9,6 +9,7 @@ import taskRoutes from "./routes/taskRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import commentRoutes from "./routes/commentRoutes.js";
 dotenv.config();
 connectDB();
 
@@ -17,10 +18,11 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes); // ✅ This will now work
+app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/comments", commentRoutes);
 app.get("/", (req, res) => {
   res.send("API is running...");
 });

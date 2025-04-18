@@ -11,10 +11,11 @@ export const registerUser = async (req, res) => {
     if (existing) return res.status(400).json({ message: "User already exists" });
 
     const hashed = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashed, role });
+    const newUser = new User({ name, email, password: hashed, role, isActive: true });
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    const message = role === "admin" ? "Admin registered successfully" : "Student registered successfully";
+    res.status(201).json({ message });
   } catch (err) {
     res.status(500).json({ message: "Registration failed", error: err.message });
   }
