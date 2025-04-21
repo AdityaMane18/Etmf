@@ -1,54 +1,46 @@
-import React from 'react';
+import {React, useState, useEffect} from 'react';
 import AdminSidebar from '../../components/admin/AdminSidebar';
+import axios from "axios";
+import { toast } from "react-hot-toast";
 import { FaSearch, FaUpload, FaEye } from 'react-icons/fa';
 import { HiOutlineDocumentText } from 'react-icons/hi';
 import { useNavigate } from "react-router-dom";
 
 const SOPSection = () => {
   const navigate = useNavigate();
+  const [documents, setDocuments] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:5000/api/documents", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setDocuments(res.data);
+      } catch (error) {
+        toast.error("Failed to load documents");
+        console.error(error);
+      }
+    };
+  
+    fetchDocuments();
+  }, []);
+   // Search Filter
+   const filteredDocs = documents.filter((doc) =>
+    doc.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const documents = [
-    {
-      iconColor: 'text-purple-500',
-      title: 'Comprehensive Study Protocol for Clinical Trial: Phase III Oncology Research',
-      type: 'Study Protocol',
-      created: '2025-01-28, 10:30 AM',
-      by: 'Dr. Anil Mehta',
-      views: '500',
-    },
-    {
-      iconColor: 'text-red-500',
-      title: 'Investigator Brochure Detailing Drug Safety and Efficacy for Trial Medication XYZ-2025',
-      type: 'Investigator Brochure (IB)',
-      created: '2025-01-27, 3:45 PM',
-      by: 'Ms. Priya Sharma',
-      views: '112',
-    },
-    {
-      iconColor: 'text-blue-500',
-      title: 'Participant Informed Consent Form for Multicenter Diabetes Management Study',
-      type: 'Informed Consent Form (ICF)',
-      created: '2025-01-26, 9:00 AM',
-      by: 'Mr. Ravi Kumar',
-      views: '5.2K',
-    },
-    {
-      iconColor: 'text-yellow-500',
-      title: 'Detailed Site Monitoring Report for Clinical Site #125 – Interim Analysis',
-      type: 'Site Monitoring Report',
-      created: '2025-01-25, 11:15 AM',
-      by: 'Dr. Sneha Patel',
-      views: '1K',
-    },
-    {
-      iconColor: 'text-green-500',
-      title: 'Final Study Closure Checklist and Regulatory Compliance Summary for Trial ABC-2025',
-      type: 'Study Closure & Regulatory Compliance Document',
-      created: '2025-01-24, 4:30 PM',
-      by: 'Ms. Aditi Singh',
-      views: '516',
-    },
-  ];
+  // Pagination
+  const totalPages = Math.ceil(filteredDocs.length / itemsPerPage);
+  const paginatedDocs = filteredDocs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="min-h-screen flex bg-gray-100">
@@ -75,6 +67,11 @@ const SOPSection = () => {
             <input
               type="text"
               placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // Reset to first page
+              }}
               className="w-full outline-none text-sm"
             />
           </div>
@@ -92,32 +89,49 @@ const SOPSection = () => {
               </tr>
             </thead>
             <tbody>
-              {documents.map((doc, i) => (
-                <tr
-                  key={i}
-                  className="border-t hover:bg-gray-50 transition"
-                >
-                  <td className="py-4 px-4 border-r">
-                    <div className="flex gap-3 items-center">
-                      <div className={`text-2xl ${doc.iconColor}`}>
-                        <HiOutlineDocumentText />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-800">{doc.title}</p>
-                        <p className="text-gray-500 text-xs">Created By: {doc.by}</p>
-                      </div>
-                    </div>
-                  </td>
+            {documents.map((doc) => (
+  <tr key={doc._id} className="border-t hover:bg-gray-50 transition">
+    <td className="py-4 px-4 border-r">
+      <div className="flex gap-3 items-center">
+        <div className="text-2xl text-blue-600">
+          <HiOutlineDocumentText />
+        </div>
+        <div>
+          <p className="font-medium text-gray-800">{doc.name}</p>
+          <p className="text-gray-500 text-xs">
+            Created By: {doc.created_by?.name || "Unknown"}
+          </p>
+        </div>
+      </div>
+    </td>
+    <td className="py-4 px-4 text-gray-700 border-r">SOP</td>
+    <td className="py-4 px-4 text-gray-700 border-r">
+      {new Date(doc.createdAt).toLocaleString()}
+    </td>
+    <td className="py-6 px-6 text-gray-700 flex items-center gap-4">
+      <FaEye className="text-blue-400" /> {doc.views || 0}
+    </td>
+  </tr>
+))}
 
-                  <td className="py-4 px-4 text-gray-700 border-r">{doc.type}</td>
-                  <td className="py-4 px-4 text-gray-700 border-r">Created On: {doc.created}</td>
-                  <td className="py-6 px-6 text-gray-700 flex items-center gap-4">
-                    <FaEye className="text-blue-400" /> {doc.views}
-                  </td>
-                </tr>
-              ))}
             </tbody>
           </table>
+        </div>
+        {/* 🔢 Pagination */}
+        <div className="mt-6 flex justify-center gap-2">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                currentPage === i + 1
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
         </div>
 
       </main>

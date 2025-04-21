@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import Swal from "sweetalert2";
 const AddDocument = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     documentName: "",
     description: "",
     file: null,
     effectiveDate: "",
-    expirationDate: "",
-    isActive: false,
+    dueDate: "",
+    isActive: true,
   });
+
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -22,11 +28,67 @@ const AddDocument = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add form submission logic here (e.g., send to backend)
-    console.log("Submitted Document:", formData);
+  const submitDocument = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return toast.error("Login required");
+   // ✅ Client-side validation
+   if (!formData.documentName || !formData.file || !formData.dueDate) {
+    toast.error("Please fill all required fields");
+    return; // ❌ Do NOT proceed or set loading
+  }
+  const today = new Date();
+const effectiveDate = new Date(formData.effectiveDate);
+const dueDate = new Date(formData.dueDate);
+
+if (dueDate < today.setHours(0, 0, 0, 0)) {
+  toast.error("Due date cannot be in the past");
+  return;
+}
+
+if (dueDate < effectiveDate) {
+  toast.error("Due date cannot be before the effective date");
+  return;
+}
+    try {
+      setLoading(true);  // Start Spin
+      const form = new FormData();
+      form.append("file", formData.file);
+      form.append("name", formData.documentName);
+      form.append("description", formData.description);
+      form.append("effectiveDate", formData.effectiveDate);
+      form.append("dueDate", formData.dueDate);
+      form.append("isActive", formData.isActive);
+  
+      const res = await axios.post("http://localhost:5000/api/documents", form, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      toast.success("Document uploaded successfully!");
+      navigate("/admin/sop");
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Upload failed");
+    }
   };
+  const handleSaveAndClose = async () => {
+    const result = await Swal.fire({
+      title: "Confirm Submission",
+      text: "Are you sure you want to upload this document?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, upload it!",
+    });
+  
+    if (result.isConfirmed) {
+      submitDocument(); // Calls actual upload
+    }
+  };
+  
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -35,7 +97,7 @@ const AddDocument = () => {
       <div className="flex-1 p-8">
         <h2 className="py-2 px-2 text-2xl font-bold text-blue-800 mb-6 bg-blue-200">Add Document</h2>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-md">
+        <form className="bg-white rounded-xl p-6 shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             {/* Left Column */}
@@ -80,6 +142,7 @@ const AddDocument = () => {
                   className="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
                 />
               </div>
+
               {/* Checkbox */}
               <div className="flex items-center gap-2">
                 <input
@@ -106,37 +169,63 @@ const AddDocument = () => {
                   className="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
                 ></textarea>
               </div>
-
-              {/* Expiration Date */}
               <div>
-                <label className="block font-medium text-sm text-gray-700">Expiration Date</label>
-                <input
-                  type="date"
-                  name="expirationDate"
-                  value={formData.expirationDate}
-                  onChange={handleChange}
-                  className="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
-                />
-              </div>
+            <label className="block font-medium text-sm text-gray-700">Due Date</label>
+  <input
+    type="date"
+    name="dueDate"
+    value={formData.dueDate}
+    onChange={handleChange}
+    className="w-full mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+  />
+</div>
+
 
             </div>
           </div>
 
           {/* Centered Buttons */}
           <div className="mt-8 flex justify-center gap-4">
-            <button
-              type="submit"
-              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              onClick={() => console.log("Save & Close clicked")}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-            >
-              Save & Close
-            </button>
+          <button
+  type="button"
+  onClick={handleSaveAndClose}
+  className={`px-6 py-2 rounded text-white flex items-center justify-center gap-2 
+    ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+  disabled={loading}
+>
+  {loading && (
+    <svg
+      className="animate-spin h-5 w-5 text-white"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      ></circle>
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      ></path>
+    </svg>
+  )}
+  {loading ? "Uploading..." : "Save & Close"}
+</button>
+<button
+    type="button"
+    onClick={() => navigate("/admin/sop")}
+    className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500"
+    disabled={loading}
+  >
+    Cancel
+  </button>
+
           </div>
         </form>
 

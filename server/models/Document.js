@@ -11,10 +11,22 @@ const documentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    effectiveDate: {
+      type: Date,
+      required: false, // set to true if needed
+    },
+    dueDate: {
+      type: Date,
+      required: false, // set to true if it should be mandatory
+    },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    viewedBy: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }],
   },
   { timestamps: true }
 );

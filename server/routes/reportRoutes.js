@@ -28,6 +28,6 @@ router.get("/student/:studentId", verifyToken, isStudent, getReportsByStudent);
 
 // 📥 Admin view all
 router.get("/", verifyToken, isAdmin, getAllReports);
-router.get("/:id", verifyToken, isAdmin, getReportById);                  // ❌ Delete
+router.get("/:id", verifyToken, isAdmin, getReportById);
 
 export default router;

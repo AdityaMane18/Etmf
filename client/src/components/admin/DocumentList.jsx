@@ -1,34 +1,31 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { FaFolder } from "react-icons/fa";
 
 const DocumentList = () => {
-  const documents = [
-    {
-      title: "Comprehensive Study Protocol for Clinical Trial: Phase III Oncology Research",
-      createdOn: "2025-01-28, 10:30 AM",
-      createdBy: "Dr. Anil Mehta",
-    },
-    {
-      title: "Investigator Brochure Detailing Drug Safety and Efficacy for Trial Medication XYZ-2025",
-      createdOn: "2025-01-27, 3:45 PM",
-      createdBy: "Ms. Priya Sharma",
-    },
-    {
-      title: "Participant Informed Consent Form for Multicenter Diabetes Management Study",
-      createdOn: "2025-01-26, 9:00 AM",
-      createdBy: "Mr. Ravi Kumar",
-    },
-    {
-      title: "Detailed Site Monitoring Report for Clinical Site #125 – Interim Analysis",
-      createdOn: "2025-01-25, 11:15 AM",
-      createdBy: "Dr. Sneha Patel",
-    },
-    {
-      title: "Final Study Closure Checklist and Regulatory Compliance Summary for Trial ABC-2025",
-      createdOn: "2025-01-24, 4:30 PM",
-      createdBy: "Ms. Aditi Singh",
-    },
-  ];
+  const [documents, setDocuments] = useState([]);
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchDocs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:5000/api/tasks/distinct-documents", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setDocuments(res.data);
+      } catch (err) {
+        toast.error("Failed to load tasks");
+      }
+    };
 
+    fetchDocs();
+  }, []);
+  const filteredDocs = documents.filter((doc) =>
+    doc.name.toLowerCase().includes(search.toLowerCase())
+  );
   return (
     <div className="bg-white p-6 rounded-xl shadow border border-gray-200">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Documents</h2>
@@ -36,15 +33,17 @@ const DocumentList = () => {
       <div className="mb-4">
         <input
           type="text"
-          placeholder="Search"
+          placeholder="Search documents..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
       <div className="space-y-4">
-        {documents.map((doc, index) => (
+        {filteredDocs.map((doc) => (
           <div
-            key={index}
+            key={doc._id}
             className="flex items-start gap-4 bg-gray-50 p-4 rounded-md shadow-sm hover:bg-gray-100 transition"
           >
             {/* Folder Icon */}
@@ -54,13 +53,19 @@ const DocumentList = () => {
 
             {/* Text Content */}
             <div className="flex-1">
-              <p className="font-medium text-gray-800">{doc.title}</p>
+              <p className="font-medium text-gray-800">{doc.name}</p>
               <p className="text-sm text-gray-600 mt-1">
-                Created On: {doc.createdOn}
+                Created On: {new Date(doc.createdAt).toLocaleString()}
                 <br />
-                Created By: {doc.createdBy}
+                Created By: {doc.created_by?.name || "Unknown"}
               </p>
             </div>
+            <button
+              className="ml-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              onClick={() => navigate(`/admin/document/${doc._id}`)}
+            >
+              Open
+            </button>
           </div>
         ))}
       </div>

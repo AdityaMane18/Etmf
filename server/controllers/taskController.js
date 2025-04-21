@@ -20,7 +20,7 @@ export const createTask = async (req, res) => {
 // ✅ Assign task to all students
 export const assignTaskToAllStudents = async (req, res) => {
   try {
-    const { document_id, status = "in process" } = req.body;
+    const { document_id, status = "pending" } = req.body;
 
     // Get all student users
     const students = await User.find({ role: "student" });
@@ -106,5 +106,31 @@ export const deleteTask = async (req, res) => {
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Delete failed", error: error.message });
+  }
+};
+export const getDistinctTaskDocuments = async (req, res) => {
+  try {
+    const tasks = await Task.find()
+      .populate({
+        path: "document_id",
+        populate: { path: "created_by", select: "name" },
+      })
+      .select("document_id");
+
+    const seen = new Set();
+    const uniqueDocs = [];
+
+    tasks.forEach((t) => {
+      const doc = t.document_id;
+      if (doc && !seen.has(doc._id.toString())) {
+        seen.add(doc._id.toString());
+        uniqueDocs.push(doc);
+      }
+    });
+
+    res.status(200).json(uniqueDocs);
+  } catch (error) {
+    console.error("Task fetch error:", error);
+    res.status(500).json({ message: "Failed to fetch distinct documents", error: error.message });
   }
 };
